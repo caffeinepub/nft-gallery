@@ -1,0 +1,39 @@
+{
+  "kind": "build_request",
+  "title": "Auto-link URLs in post captions so other users can click them",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Render any URLs found in a post’s caption/description as clickable links (auto-linking) everywhere the post description is displayed (e.g., in the posts feed PostCard and any post detail views). Links must open in a new tab and use safe anchor attributes.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Can you make every link attached to a post be clickable by others users!"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When a post caption contains a URL like \"https://example.com\", it is rendered as a clickable <a> element for all viewers (including non-authenticated users).",
+        "Clicking an auto-linked URL opens the destination in a new browser tab/window.",
+        "Auto-linked anchors use security attributes equivalent to: target=\"_blank\" and rel=\"noreferrer noopener\".",
+        "Non-URL caption text remains unchanged and readable (including spacing/line breaks)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit any files under frontend/src/components/ui (Shadcn components are read-only).",
+    "Do not modify the backend schema or canister APIs for this change."
+  ],
+  "nonGoals": [
+    "Adding a dedicated ‘link’ field to posts in the backend.",
+    "Implementing rich text editing or Markdown rendering for captions.",
+    "Changing authentication, permissions, or visibility rules for posts."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

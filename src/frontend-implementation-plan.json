@@ -1,0 +1,29 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Auto-link URLs in post captions",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Auto-link any URLs in post captions wherever the post description is rendered, opening links in a new tab with safe anchor attributes while preserving non-URL text and line breaks.",
+      "acceptanceCriteria": [
+        "When a post caption contains a URL like \"https://example.com\", it is rendered as a clickable <a> element for all viewers (including non-authenticated users).",
+        "Clicking an auto-linked URL opens the destination in a new browser tab/window.",
+        "Auto-linked anchors use security attributes equivalent to: target=\"_blank\" and rel=\"noreferrer noopener\".",
+        "Non-URL caption text remains unchanged and readable (including spacing/line breaks)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/LinkifiedText.tsx",
+          "operation": "create",
+          "description": "Create a reusable caption renderer that detects URLs in plain text and returns React nodes with <a> links for URLs (using target=\"_blank\" and rel=\"noreferrer noopener\"), while preserving original spacing/line breaks (e.g., via newline handling and/or whitespace-pre-wrap styling)."
+        },
+        {
+          "path": "frontend/src/components/PostCard.tsx",
+          "operation": "modify",
+          "description": "Update the post caption rendering to use the new LinkifiedText component for post.metadata.description so URLs become clickable everywhere PostCard shows the description, without changing backend data or modifying any files under frontend/src/components/ui."
+        }
+      ]
+    }
+  ]
+}

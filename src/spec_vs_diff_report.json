@@ -1,0 +1,41 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-04T01:00:25.979Z",
+  "summary": "Implemented a reusable LinkifiedText component that auto-links URLs with target=\"_blank\" and rel=\"noreferrer noopener\", and integrated it into PostCard captions. However, the diff evidence only shows the change applied in PostCard; there is no clear evidence it is applied in other places where post descriptions may be displayed (e.g., post detail view). Also includes unrelated changes (project_state.json and modifications to useInternetIdentity.ts) not requested by the BuildRequest.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Render any URLs found in a post’s caption/description as clickable links everywhere the post description is displayed (e.g., in the posts feed PostCard and any post detail views).",
+      "reason": "The diff shows auto-linking applied in frontend/src/components/PostCard.tsx, but does not provide evidence of similar rendering changes in any post detail view or any other component that displays the post description.",
+      "evidence": [
+        "frontend/src/components/PostCard.tsx",
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Updated/added project_state.json project metadata.",
+      "reason": "Not requested by the BuildRequest; appears to be repository metadata documentation rather than part of the auto-linking feature.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "description": "Modifications to Internet Identity hook (useInternetIdentity.ts).",
+      "reason": "Not requested by the BuildRequest (feature is purely about rendering captions with clickable URLs). The diff indicates changes to the auth hook but does not tie them to auto-linking.",
+      "evidence": [
+        "frontend/src/hooks/useInternetIdentity.ts"
+      ]
+    }
+  ],
+  "confidence": 0.62,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/components/LinkifiedText.tsx",
+    "frontend/src/components/PostCard.tsx",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "project_state.json"
+  ]
+}

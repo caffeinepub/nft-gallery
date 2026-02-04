@@ -1,0 +1,212 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "NFT Gallery is a full-stack Internet Computer (ICP) dApp (Motoko canister + React frontend) for sharing NFT-related posts with images, captions, threaded comments/replies, likes, and a follow-based feed. Users authenticate via Internet Identity, must complete a profile (username/email) before posting or commenting, and an admin role (bootstrapped via a secret token) can moderate by deleting any post or comment. The backend also includes a blob-storage integration mixin for managing uploaded blobs and storage gateway authorization.",
+  "existing_features": [
+    {
+      "id": "IF-1",
+      "title": "Internet Identity authentication (login/logout + persisted sessions)",
+      "synonyms": [
+        "II auth",
+        "DFINITY AuthClient login"
+      ],
+      "description": "Provides a React context (`InternetIdentityProvider`) that initializes `AuthClient`, loads any stored delegation on mount, supports login with Internet Identity, and supports logout/clear. Exposes login status flags for UI gating.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-2",
+      "title": "Actor creation per identity with automatic access-control initialization",
+      "synonyms": [
+        "ICP actor hook",
+        "identity-bound actor"
+      ],
+      "description": "Creates an anonymous actor when unauthenticated and an identity-bound actor when authenticated. On authenticated actor creation, calls `_initializeAccessControlWithSecret` using a token extracted from a URL hash secret parameter. Invalidates and refetches all non-actor React Query caches when the actor changes.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-3",
+      "title": "Role-based access control with admin bootstrapping",
+      "synonyms": [
+        "RBAC",
+        "admin token bootstrap"
+      ],
+      "description": "Motoko `AccessControl` assigns the first qualified caller as admin based on an environment token comparison, otherwise assigns user. Supports querying caller role, checking admin status, and assigning roles (admin-only). Frontend shows an admin badge and an admin panel when role is admin.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-4",
+      "title": "User profile management (required username + email)",
+      "synonyms": [
+        "profile setup",
+        "edit profile"
+      ],
+      "description": "Backend stores and validates caller profiles; anonymous callers cannot save. Frontend enforces profile completion via a blocking setup dialog for first-time users and provides an edit profile dialog in the user menu. Profile is required to post, comment, reply, follow, and like.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-5",
+      "title": "Create NFT posts with up to 4 images and a required caption",
+      "synonyms": [
+        "post creation",
+        "share NFT"
+      ],
+      "description": "Authenticated users with complete profiles can create posts with a non-empty description and 1–4 images. Frontend previews images, enforces max 4, uploads via `ExternalBlob` with progress tracking, and invalidates the posts list on success.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-6",
+      "title": "Posts feed: fetch, sort, and display gallery with empty states",
+      "synonyms": [
+        "all posts feed",
+        "gallery view"
+      ],
+      "description": "Frontend fetches all posts via React Query, sorts by timestamp (newest first), and renders a vertical feed (`PostGallery`/`PostCard`) including an NFT-themed empty-state placeholder when no posts exist.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-7",
+      "title": "Post detail display with image gallery layout",
+      "synonyms": [
+        "post card",
+        "image grid"
+      ],
+      "description": "Each post card shows the caption, author display name (from user profile lookup), relative timestamp, and images rendered as either a single large image or a 2-column grid when multiple images are present.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-8",
+      "title": "Threaded comments and nested replies",
+      "synonyms": [
+        "comments",
+        "replies",
+        "comment threads"
+      ],
+      "description": "Users can add top-level comments to posts and replies to comments (parentId-based). UI renders recursive threads up to a max depth, fetches comment records by id, and enforces authentication + complete profile for posting comments/replies.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-9",
+      "title": "Like system with toggle behavior and per-user state",
+      "synonyms": [
+        "likes",
+        "heart button"
+      ],
+      "description": "Backend stores a set of principals per post to represent likes. Calling `likePost` toggles like/unlike. Frontend displays like count, whether the current user has liked, and updates react-query caches for like-related queries on mutation success.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-10",
+      "title": "Follow / unfollow system and following feed",
+      "synonyms": [
+        "social graph",
+        "following tab"
+      ],
+      "description": "Users can follow/unfollow other users and query follow state. Frontend provides a Follow/Following toggle on posts by other users and includes a \"Following\" tab that filters the global posts list to only authors the user follows.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-11",
+      "title": "Admin moderation: delete posts",
+      "synonyms": [
+        "post removal",
+        "moderation tools"
+      ],
+      "description": "Admins can delete any post using a confirmation dialog. Backend enforces admin-only deletion via `AccessControl.hasPermission(..., #admin)`.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-12",
+      "title": "Admin moderation: delete comments",
+      "synonyms": [
+        "comment removal",
+        "moderation tools"
+      ],
+      "description": "Admins can delete any comment using a confirmation dialog. Backend enforces admin-only deletion and removes the deleted comment from its parent comment or post comment list (and deletes listed replies).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-13",
+      "title": "Blob storage integration and maintenance endpoints",
+      "synonyms": [
+        "storage gateway authorization",
+        "blob GC tooling"
+      ],
+      "description": "Backend includes a storage mixin supporting: updating authorized gateway principals via a cashier canister, checking blob liveness, listing blobs eligible for deletion (authorized callers only), confirming blob deletion and triggering GC, and refilling the storage cashier with cycles (cashier-only).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-14",
+      "title": "React Query data layer with cache invalidation and toast feedback",
+      "synonyms": [
+        "react-query hooks",
+        "mutation notifications"
+      ],
+      "description": "Centralized hooks (`useQueries.ts`) wrap backend calls for posts, comments, likes, profiles, and follow operations. Mutations invalidate relevant queries and show success/error toast messages.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-15",
+      "title": "Additional backend query APIs for user posts and post comments",
+      "synonyms": [
+        "getUserPosts",
+        "getPostComments"
+      ],
+      "description": "Backend provides `getUserPosts(user)` to list posts authored by a principal and `getPostComments(postId)` to list all comment records associated with a post.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "feature-render-any-urls-found-in-a-post-s-caption-description-as-clickable-links-auto-linking-everywhere-the-post-description-is-displayed-e-g-in-the-posts-feed-postcard-and-any-post-detail-views-links-must-open-in-a-new-tab-and-use-safe-anchor-attributes",
+      "title": "Render any URLs found in a post’s caption/description as clickable links (auto-linking) everywhere the post description is displayed (e.g., in the posts feed PostCard and any post detail views). Links must open in a new tab and use safe anchor attributes.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Make URLs included in post text/captions render as clickable links for other users (auto-linking).",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "architectural_notes": [
+    "ICP Motoko canister backend with modular mixins: `MixinAuthorization` for role management and `MixinStorage` for blob-storage operations.",
+    "Role-based access control (admin/user/guest) implemented in `authorization/access-control.mo`, with first-time initialization driven by an environment token and a user-provided secret.",
+    "Frontend uses React + @tanstack/react-query for data fetching/caching; actor instances are recreated per identity and trigger query invalidation/refetch on identity changes (`useActor`).",
+    "Authentication handled via Internet Identity (`@dfinity/auth-client`), exposing a React context provider (`InternetIdentityProvider`) with login/logout and persisted identity loading.",
+    "UI built with Tailwind CSS + shadcn-style components; theme switching via `next-themes`; toast notifications via `sonner`.",
+    "Client-side gating enforces authentication and completed profile before creating posts or adding comments/replies; backend independently enforces these constraints as traps.",
+    "Media upload uses `ExternalBlob` objects (from generated backend bindings) and displays upload progress callbacks in the create-post dialog."
+  ],
+  "known_issues": [
+    "Backend `deletePost` removes only the post entry; it does not delete associated comments or likes, despite the UI warning that all comments will be deleted (data can become orphaned).",
+    "Backend `deleteComment` deletes only direct replies listed on the comment; deeper nested replies may remain orphaned in the `comments` map.",
+    "Follow data structure is named `followers` but actually stores \"who the caller follows\" (following set keyed by caller). `getFollowers` and `getFollowing` currently return the same data, so true follower lists are not available.",
+    "Environment variable name for the storage cashier principal is `CAFFFEINE_STORAGE_CASHIER_PRINCIPAL` (note spelling with extra 'F'); likely a typo that can break deployments if the intended env var is `CAFFEINE_STORAGE_CASHIER_PRINCIPAL`.",
+    "Access control initialization traps if `CAFFEINE_ADMIN_TOKEN` is not set; since the frontend calls initialization on authenticated sessions, missing env config will break logged-in usage.",
+    "Like operations do not validate that the post exists before toggling likes, allowing likes to accumulate for non-existent postIds.",
+    "No pagination/infinite scroll for posts/comments; `getAllPosts` returns all posts and the frontend sorts client-side."
+  ],
+  "isFixRequest": false,
+  "gameProjectType": "none",
+  "projectName": "NFT Gallery",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
